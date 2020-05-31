@@ -4,3 +4,4 @@ pytest
 pytest-django
 djangorestframework
 djangorestframework-simplejwt
+drf-nested-routers
