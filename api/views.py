@@ -60,7 +60,7 @@ class FollowViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         following = User.objects.get(username=self.request.data.get('following'))
         user = self.request.user
-        follower = Follow.objects.filter(user=user, following=following).count()
-        if follower > 0:
+        follower = Follow.objects.filter(user=user, following=following)
+        if follower:
             raise ValidationError
         serializer.save(user=user, following=following)
