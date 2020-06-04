@@ -62,5 +62,5 @@ class FollowViewSet(viewsets.ModelViewSet):
         user = self.request.user
         follower = Follow.objects.filter(user=user, following=following)
         if follower:
-            raise ValidationError('Following field is required.')
+            raise ValidationError('Вы уже подписаны на этого автора.')
         serializer.save(user=user, following=following)
