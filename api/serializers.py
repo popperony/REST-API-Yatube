@@ -27,20 +27,15 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
-    following = serializers.CharField(source='following.username')
-    # following = serializers.SlugRelatedField( #я очень долго бился с этим полем, не победил. TypeError: 'User' object is not subscriptable
-    #     many=False
-    #     slug_field='username',
-    #     queryset=User.objects.all())
+    user = serializers.CharField(source='user.username', read_only=True)
+    following = serializers.SlugRelatedField(read_only=False, queryset=User.objects.all(), slug_field='username')
 
     class Meta:
         fields = ('id', 'user', 'following')
         model = Follow
 
     def validate(self, value):
-        f = value['following']
-        following = get_object_or_404(User, username=f['username'])
+        following = get_object_or_404(User, username=value['following'])
         user = self.context['request'].user
         follows = Follow.objects.filter(user=user, following=following)
         if Follow.objects.filter(user=user, following=following).exists():
