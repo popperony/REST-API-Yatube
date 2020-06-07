@@ -56,11 +56,3 @@ class FollowViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['=following__username', '=user__username']
-
-    def perform_create(self, serializer):
-        following = User.objects.get(username=self.request.data.get('following'))
-        user = self.request.user
-        follower = Follow.objects.filter(user=user, following=following)
-        if follower:
-            raise ValidationError('Вы уже подписаны на этого автора.')
-        serializer.save(user=user, following=following)
