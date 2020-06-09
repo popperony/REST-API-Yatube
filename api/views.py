@@ -1,16 +1,19 @@
-from api.models import Post, Comment, Group, Follow, User
 from rest_framework import status, viewsets, filters
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
-from .serializers import PostSerializer, CommentSerializer, GroupSerializer, FollowSerializer
 from rest_framework import permissions
+from rest_framework.exceptions import ValidationError
+from .models import Post, Comment, Group, Follow, User
+from .serializers import PostSerializer, CommentSerializer, GroupSerializer, FollowSerializer
 from .permissions import IsOwnerOrReadOnly
 
 
 class PostsViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsOwnerOrReadOnly
+        ]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -26,7 +29,10 @@ class PostsViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsOwnerOrReadOnly
+        ]
 
     def get_queryset(self):
         queryset = Comment.objects.all()
@@ -38,16 +44,14 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def list(self, request, posts_pk):
-        queryset = self.get_queryset()
-        serializer = CommentSerializer(queryset, many=True)
-        return Response(serializer.data)
-
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes =     permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsOwnerOrReadOnly
+        ]
 
 
 class FollowViewSet(viewsets.ModelViewSet):
@@ -56,3 +60,6 @@ class FollowViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['=following__username', '=user__username']
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
