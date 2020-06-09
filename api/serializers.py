@@ -44,6 +44,5 @@ class FollowSerializer(serializers.ModelSerializer):
         if Follow.objects.filter(user=user, following=following).exists():
             raise serializers.ValidationError(
         f"Вы уже подписаны на автора {following}"
-        ) 
-        value['following'] = following
+            )
         return value
